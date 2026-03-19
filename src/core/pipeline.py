@@ -1040,11 +1040,12 @@ class StockAnalysisPipeline:
     
     def run(
         self,
-        stock_codes: Optional[List[str]] = None,
-        dry_run: bool = False,
-        send_notification: bool = True,
-        merge_notification: bool = False
-    ) -> List[AnalysisResult]:
+    stock_codes: Optional[List[str]] = None,
+    dry_run: bool = False,
+    send_notification: bool = True,
+    merge_notification: bool = False,
+    analysis_mode: str = "close_full"
+) -> List[AnalysisResult]:
         """
         运行完整的分析流程
 
