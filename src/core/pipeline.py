@@ -1121,6 +1121,7 @@ class StockAnalysisPipeline:
                     single_stock_notify=single_stock_notify and send_notification,
                     report_type=report_type,  # Issue #119: 传递报告类型
                     analysis_query_id=uuid.uuid4().hex,
+                    analysis_mode=analysis_mode,
                 ): code
                 for code in stock_codes
             }
