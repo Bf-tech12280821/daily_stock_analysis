@@ -881,10 +881,11 @@ class GeminiAnalyzer:
             return None
 
     def analyze(
-        self, 
-        context: Dict[str, Any],
-        news_context: Optional[str] = None
-    ) -> AnalysisResult:
+    self,
+    context: Dict[str, Any],
+    news_context: Optional[str] = None,
+    analysis_mode: str = "close_full",
+) -> AnalysisResult:
         """
         分析单只股票
         
@@ -938,7 +939,12 @@ class GeminiAnalyzer:
         
         try:
             # 格式化输入（包含技术面数据和新闻）
-            prompt = self._format_prompt(context, name, news_context)
+            prompt = self._format_prompt(
+    context,
+    name,
+    news_context,
+    analysis_mode=analysis_mode,
+)
             
             config = get_config()
             model_name = config.litellm_model or "unknown"
@@ -1036,11 +1042,12 @@ class GeminiAnalyzer:
             )
     
     def _format_prompt(
-        self, 
-        context: Dict[str, Any], 
-        name: str,
-        news_context: Optional[str] = None
-    ) -> str:
+    self,
+    context: Dict[str, Any],
+    name: str,
+    news_context: Optional[str] = None,
+    analysis_mode: str = "close_full",
+) -> str:
         """
         格式化分析提示词（决策仪表盘 v2.0）
         
@@ -1059,7 +1066,53 @@ class GeminiAnalyzer:
             stock_name = STOCK_NAME_MAP.get(code, f'股票{code}')
             
         today = context.get('today', {})
-        
+        if analysis_mode == "morning_light":
+    mode_rules = """
+## ⏰ 早盘轻量模式要求
+
+你当前执行的是**早盘轻量模式**，请严格遵守以下要求：
+
+1. **优先分析隔夜与近24小时消息面**
+   - 优先判断最新消息、公告、政策、业绩预期、行业催化对今日开盘与盘中情绪的影响。
+   - 若存在明确利好/利空消息，应优先在结论中体现。
+
+2. **技术面只保留关键判断**
+   - 仅保留关键支撑位、压力位、开盘情绪、量比/换手率是否异常等核心信息。
+   - 不要展开成长篇均线复盘、趋势复盘、筹码复盘。
+
+3. **输出必须简洁实战**
+   - 结论偏向“今天怎么看、现在怎么应对”。
+   - 用简洁语言给出判断，不做长篇趋势论述。
+   - 若消息面与技术面不一致，优先说明“今天短线谁影响更大”。
+
+4. **结论偏短线**
+   - 更关注今日/近1-2日交易影响，不要过度拉长到中长期。
+"""
+else:
+    mode_rules = """
+## 🌙 收盘完整模式要求
+
+你当前执行的是**收盘完整模式**，请严格遵守以下要求：
+
+1. **消息面必须参与最终结论**
+   - 消息面不可只作为背景罗列，必须进入最终判断。
+   - 需要明确说明消息面对股价、情绪、预期的实际影响。
+
+2. **若消息面与技术面冲突，必须说明权重**
+   - 如果技术面偏强但消息面偏空，或反之，必须明确指出当前谁权重更高。
+   - 说明原因：是短期情绪压制，还是趋势逻辑更强。
+
+3. **说明消息的性质**
+   - 必须判断当前消息属于：
+     - 短期扰动
+     - 中期催化
+     - 趋势变量
+   - 不能只说“有消息”，要说明它对后续走势的重要程度。
+
+4. **结论允许更完整**
+   - 可综合技术面、筹码、趋势、消息面做完整复盘。
+   - 输出比早盘更详细，但仍应以决策有用为核心。
+"""
         # ========== 构建决策仪表盘格式的输入 ==========
         prompt = f"""# 决策仪表盘分析请求
 
@@ -1192,7 +1245,8 @@ class GeminiAnalyzer:
 """
 
         # 明确的输出要求
-        prompt += f"""
+prompt += mode_rules
+prompt += f"""
 ---
 
 ## ✅ 分析任务
