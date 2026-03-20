@@ -162,12 +162,12 @@ class StockAnalysisPipeline:
             return False, error_msg
     
     def analyze_stock(
-    self,
-    code: str,
-    report_type: ReportType,
-    query_id: str,
-    analysis_mode: str = "close_full",
-) -> Optional[AnalysisResult]:
+        self,
+        code: str,
+        report_type: ReportType,
+        query_id: str,
+        analysis_mode: str = "close_full",
+    ) -> Optional[AnalysisResult]:
         """
         分析单只股票（增强版：含量比、换手率、筹码分析、多维度情报）
         
@@ -359,10 +359,10 @@ class StockAnalysisPipeline:
             
             # Step 7: 调用 AI 分析（传入增强的上下文和新闻）
             result = self.analyzer.analyze(
-    enhanced_context,
-    news_context=news_context,
-    analysis_mode=analysis_mode,
-)
+                enhanced_context,
+                news_context=news_context,
+                analysis_mode=analysis_mode,
+            )
 
             # Step 7.5: 填充分析时的价格信息到 result
             if result:
@@ -963,14 +963,14 @@ class StockAnalysisPipeline:
         return context
     
     def process_single_stock(
-    self,
-    code: str,
-    skip_analysis: bool = False,
-    single_stock_notify: bool = False,
-    report_type: ReportType = ReportType.SIMPLE,
-    analysis_query_id: Optional[str] = None,
-    analysis_mode: str = "close_full",
-) -> Optional[AnalysisResult]:
+        self,
+        code: str,
+        skip_analysis: bool = False,
+        single_stock_notify: bool = False,
+        report_type: ReportType = ReportType.SIMPLE,
+        analysis_query_id: Optional[str] = None,
+        analysis_mode: str = "close_full",
+    ) -> Optional[AnalysisResult]:
         """
         处理单只股票的完整流程
 
@@ -1009,11 +1009,11 @@ class StockAnalysisPipeline:
             
             effective_query_id = analysis_query_id or self.query_id or uuid.uuid4().hex
             result = self.analyze_stock(
-    code,
-    report_type,
-    query_id=effective_query_id,
-    analysis_mode=analysis_mode,
-)
+                code,
+                report_type,
+                query_id=effective_query_id,
+                analysis_mode=analysis_mode,
+            )
             
             if result:
                 if not result.success:
@@ -1056,12 +1056,12 @@ class StockAnalysisPipeline:
     
     def run(
         self,
-    stock_codes: Optional[List[str]] = None,
-    dry_run: bool = False,
-    send_notification: bool = True,
-    merge_notification: bool = False,
-    analysis_mode: str = "close_full"
-) -> List[AnalysisResult]:
+        stock_codes: Optional[List[str]] = None,
+        dry_run: bool = False,
+        send_notification: bool = True,
+        merge_notification: bool = False,
+        analysis_mode: str = "close_full"
+    ) -> List[AnalysisResult]:
         """
         运行完整的分析流程
 
