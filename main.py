@@ -309,16 +309,16 @@ def run_full_analysis(
             query_source="cli",
             save_context_snapshot=save_context_snapshot
         )
-# 根据是否跳过大盘，决定个股分析模式
-analysis_mode = "morning_light" if args.no_market_review else "close_full"
+        # 根据是否跳过大盘，决定个股分析模式
+        analysis_mode = "morning_light" if args.no_market_review else "close_full"
         # 1. 运行个股分析
         results = pipeline.run(
-    stock_codes=stock_codes,
-    dry_run=args.dry_run,
-    send_notification=not args.no_notify,
-    merge_notification=merge_notification,
-    analysis_mode=analysis_mode
-)
+            stock_codes=stock_codes,
+            dry_run=args.dry_run,
+            send_notification=not args.no_notify,
+            merge_notification=merge_notification,
+            analysis_mode=analysis_mode
+        )
 
         # Issue #128: 分析间隔 - 在个股分析和大盘分析之间添加延迟
         analysis_delay = getattr(config, 'analysis_delay', 0)
